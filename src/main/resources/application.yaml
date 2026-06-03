@@ -1,0 +1,11 @@
+spring:
+  application.name: Filmorate
+  datasource:
+    url: jdbc:postgresql://localhost:5432/filmorate
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+#TODO
+#Сделать тесты и реализовать функционал
+# Протестировать через postman
