@@ -150,8 +150,4 @@ public class FilmServiceTest {
         Assertions.assertThat(films).contains(film1, film2);
     }
 
-
-// TODO
-// протестировать контроллеры
-// Потом проверить через Postman
 }
