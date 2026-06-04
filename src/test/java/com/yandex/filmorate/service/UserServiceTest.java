@@ -32,7 +32,7 @@ public class UserServiceTest {
         userService.deleteUser(user.getId());
     }
     @Test
-    void saveNewUserWithEmailError() {
+    void validateEmail() {
         User user1 = User.builder()
                 .login("test")
                 .birthday(LocalDate.of(2026,1,1))
@@ -49,12 +49,15 @@ public class UserServiceTest {
                 .email(" ")
                 .build();
 
-        Assertions.assertThatThrownBy(()-> userService.addUser(user1)).isInstanceOf(UserValidateException.class);
-        Assertions.assertThatThrownBy(()-> userService.addUser(user2)).isInstanceOf(UserValidateException.class);
-        Assertions.assertThatThrownBy(()-> userService.addUser(user3)).isInstanceOf(UserValidateException.class);
+        Assertions.assertThatThrownBy(()-> userService.validate(user1)).isInstanceOf(UserValidateException.class)
+                .hasMessageContaining("email dont correct!");
+        Assertions.assertThatThrownBy(()-> userService.validate(user2)).isInstanceOf(UserValidateException.class)
+                .hasMessageContaining("email dont correct!");
+        Assertions.assertThatThrownBy(()-> userService.validate(user3)).isInstanceOf(UserValidateException.class)
+                .hasMessageContaining("email dont correct!");
     }
     @Test
-    void saveNewUserWithLoginError() {
+    void validateLogin() {
         User user1 = User.builder()
                 .login("test test")
                 .birthday(LocalDate.of(2026,1,1))
@@ -66,19 +69,22 @@ public class UserServiceTest {
                 .email("arr@gmail.com")
                 .build();
 
-        Assertions.assertThatThrownBy(()-> userService.addUser(user1)).isInstanceOf(UserValidateException.class);
-        Assertions.assertThatThrownBy(()-> userService.addUser(user2)).isInstanceOf(UserValidateException.class);
+        Assertions.assertThatThrownBy(()-> userService.validate(user1)).isInstanceOf(UserValidateException.class)
+                .hasMessageContaining("login dont correct!");
+        Assertions.assertThatThrownBy(()-> userService.validate(user2)).isInstanceOf(UserValidateException.class)
+                .hasMessageContaining("login dont correct!");
     }
 
     @Test
-    void saveNewUserWithBirthdayError() {
+    void validateBirthday() {
         User user1 = User.builder()
                 .login("test")
                 .birthday(LocalDate.of(2100,1,1))
                 .email("arr@gmail.com")
                 .build();
 
-        Assertions.assertThatThrownBy(()-> userService.addUser(user1)).isInstanceOf(UserValidateException.class);
+        Assertions.assertThatThrownBy(()-> userService.validate(user1)).isInstanceOf(UserValidateException.class)
+                .hasMessageContaining("birthday dont correct!");
     }
 
     @Test
