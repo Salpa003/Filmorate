@@ -1,7 +1,7 @@
 spring:
   application.name: Filmorate
   datasource:
-    url: jdbc:postgresql://localhost:5432/filmorate
+    url: jdbc:postgresql://localhost:5432/filmorate_test
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
