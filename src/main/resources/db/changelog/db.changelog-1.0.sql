@@ -17,3 +17,17 @@ CREATE TABLE films(
     release_date DATE,
     duration INT
 );
+
+--changeset salpa:3
+CREATE TABLE users_friends(
+    id BIGSERIAL PRIMARY KEY ,
+    user_id BIGINT REFERENCES users(id) NOT NULL ,
+    friend_id BIGINT REFERENCES  users(id) NOT NULL
+);
+
+--changeset salpa:4
+CREATE TABLE films_likes(
+    id BIGSERIAL PRIMARY KEY,
+    film_id BIGINT REFERENCES films(id),
+    user_id BIGINT REFERENCES users(id)
+);

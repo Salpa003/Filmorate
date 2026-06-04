@@ -31,4 +31,24 @@ public class FilmRestController {
     public Set<Film> getAllFilms() {
         return filmService.getAllFilms();
     }
+
+    @PutMapping("/{id}/likes/{userId}")
+    public Film addLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.addLike(id,userId);
+        return filmService.getFilmById(id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.deleteLike(id,userId);
+        return filmService.getFilmById(id);
+    }
+
+    @GetMapping("/popular?count={count}")
+    public Set<Long> getPopularFilms(@PathVariable(required = false) Long count) {
+        if (count == null)
+            count = 10L;
+        return filmService.getTopFilms(count);
+    }
+
 }

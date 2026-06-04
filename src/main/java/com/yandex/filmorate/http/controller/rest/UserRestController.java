@@ -30,4 +30,27 @@ public class UserRestController {
     public Set<User> getAllUsers() {
         return userService.getAllUsers();
     }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id,friendId);
+        return userService.getUserById(id);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.deleteFriend(id,friendId);
+        return userService.getUserById(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Set<Long> getFriends(@PathVariable Long id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Set<Long> getDoubleFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        return userService.getDoubleFriends(id,otherId);
+    }
+
 }

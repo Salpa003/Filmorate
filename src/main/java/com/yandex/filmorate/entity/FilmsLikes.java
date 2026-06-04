@@ -6,25 +6,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "films_likes")
+public class FilmsLikes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String email;
+    @Column(name = "film_id")
+    private Long filmId;
 
-    private String login;
+    @Column(name = "user_id")
+    private Long userId;
 
-    private String name;
-
-    private LocalDate birthday;
+    public FilmsLikes(Long filmId, Long userId) {
+        this.filmId = filmId;
+        this.userId = userId;
+    }
 }
