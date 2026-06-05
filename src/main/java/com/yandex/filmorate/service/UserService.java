@@ -63,6 +63,10 @@ public class UserService {
 
     @Transactional
     public void addFriend(Long userId, Long friendId) {
+        Optional<User> user = userRepository.findById(userId);
+        Optional<User> friend = userRepository.findById(friendId);
+        if (user.isEmpty() || friend.isEmpty())
+            throw new NotFoundException("");
         UsersFriends usersFriends1 = new UsersFriends(userId,friendId);
         UsersFriends usersFriends2 = new UsersFriends(friendId, userId);
         usersFriendsRepository.save(usersFriends1);
