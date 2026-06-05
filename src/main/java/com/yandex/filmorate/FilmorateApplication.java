@@ -1,14 +1,9 @@
 package com.yandex.filmorate;
 
-import com.yandex.filmorate.entity.User;
-import com.yandex.filmorate.service.FilmService;
-import com.yandex.filmorate.service.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.time.LocalDate;
-import java.util.Set;
 
 @SpringBootApplication
 public class FilmorateApplication {
