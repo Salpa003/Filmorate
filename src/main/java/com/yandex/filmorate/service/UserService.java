@@ -101,7 +101,7 @@ public class UserService {
     public Set<Long> getFriends(Long userId) {
         Optional<User> byId = userRepository.findById(userId);
         if (byId.isEmpty())
-            return new HashSet<>();
+            throw new NotFoundException("");
         return usersFriendsRepository.getFriends(userId);
     }
     public void validate(User user) {
