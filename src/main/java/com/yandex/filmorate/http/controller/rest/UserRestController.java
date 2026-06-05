@@ -49,7 +49,7 @@ public class UserRestController {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Set<Long> getDoubleFriends(@PathVariable Long id, @PathVariable Long otherId) {
+    public Set<User> getDoubleFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return userService.getDoubleFriends(id,otherId);
     }
 

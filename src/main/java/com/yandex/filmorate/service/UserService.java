@@ -84,7 +84,7 @@ public class UserService {
     }
 
     @Transactional
-    public Set<Long> getDoubleFriends(Long user1id, Long user2id) {
+    public Set<User> getDoubleFriends(Long user1id, Long user2id) {
         Set<Long> user1friends = usersFriendsRepository.getFriends(user1id);
         Set<Long> user2friends = usersFriendsRepository.getFriends(user2id);
         Set<Long> doubleFriends = new HashSet<>();
@@ -94,7 +94,7 @@ public class UserService {
                     doubleFriends.add(a1);
             }
         }
-        return doubleFriends;
+        return doubleFriends.stream().map(userRepository::findById).map(a-> a.get()).collect(Collectors.toSet());
     }
 
     @Transactional
