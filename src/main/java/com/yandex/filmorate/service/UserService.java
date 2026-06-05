@@ -2,6 +2,7 @@ package com.yandex.filmorate.service;
 
 import com.yandex.filmorate.entity.User;
 import com.yandex.filmorate.entity.UsersFriends;
+import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.exception.UserValidateException;
 import com.yandex.filmorate.repository.UserRepository;
 import com.yandex.filmorate.repository.UsersFriendsRepository;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,9 @@ public class UserService {
     @Transactional
     public void updateUser(User user) {
         validate(user);
+        Optional<User> byId = userRepository.findById(user.getId());
+        if (byId.isEmpty())
+            throw new NotFoundException("User not found!");
         userRepository.save(user);
     }
 
@@ -49,6 +55,9 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id) {
+        Optional<User> byId = userRepository.findById(id);
+        if (byId.isEmpty())
+           throw new NotFoundException("");
         userRepository.deleteById(id);
     }
 
@@ -62,7 +71,12 @@ public class UserService {
 
     @Transactional
     public void deleteFriend(Long userId, Long friendId) {
+        Optional<User> user = userRepository.findById(userId);
+        Optional<User> friend = userRepository.findById(friendId);
+        if (user.isEmpty() || friend.isEmpty())
+            throw new NotFoundException("");
         usersFriendsRepository.removeByUserIdAndFriendId(userId,friendId);
+        usersFriendsRepository.removeByUserIdAndFriendId(friendId,userId);
     }
 
     @Transactional
@@ -81,6 +95,9 @@ public class UserService {
 
     @Transactional
     public Set<Long> getFriends(Long userId) {
+        Optional<User> byId = userRepository.findById(userId);
+        if (byId.isEmpty())
+            return new HashSet<>();
         return usersFriendsRepository.getFriends(userId);
     }
     public void validate(User user) {

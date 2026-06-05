@@ -4,6 +4,7 @@ package com.yandex.filmorate.service;
 import com.yandex.filmorate.entity.Film;
 import com.yandex.filmorate.entity.FilmsLikes;
 import com.yandex.filmorate.exception.FilmValidateException;
+import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.repository.FilmRepository;
 import com.yandex.filmorate.repository.FilmsLikesRepository;
 import jakarta.transaction.Transactional;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,9 @@ public class FilmService {
     @Transactional
     public void updateFilm(Film film) {
         validate(film);
+        Optional<Film> byId = filmRepository.findById(film.getId());
+        if (byId.isEmpty())
+            throw new NotFoundException("");
         filmRepository.save(film);
     }
 
