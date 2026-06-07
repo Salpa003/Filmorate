@@ -38,7 +38,7 @@ public class FilmRestController {
         return filmService.getAllFilms();
     }
 
-    @PutMapping("/{id}/likes/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable Long id, @PathVariable Long userId) {
         filmService.addLike(id,userId);
         return filmService.getFilmById(id);
