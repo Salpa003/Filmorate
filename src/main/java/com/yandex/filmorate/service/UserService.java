@@ -130,6 +130,11 @@ public class UserService {
             throw new NotFoundException("");
         return usersFriendsRepository.getFriends(userId);
     }
+
+    @Transactional
+    public boolean exist(Long id) {
+        return userRepository.existsById(id);
+    }
     public void validate(User user) {
         String errorMessage = null;
         if (user.getEmail().isBlank() || !user.getEmail().contains("@"))

@@ -43,7 +43,6 @@ public class FilmRestController {
         filmService.addLike(id,userId);
         return filmService.getFilmById(id);
     }
-
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         filmService.deleteLike(id,userId);

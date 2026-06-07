@@ -77,9 +77,8 @@ public class FilmService {
 
     @Transactional
     public void deleteLike(Long filmId, Long userId) {
-        User user = userService.getUserById(userId);
         Optional<Film> byId = filmRepository.findById(filmId);
-        if (user == null || byId.isEmpty())
+        if (!userService.exist(userId) || byId.isEmpty())
             throw new NotFoundException("");
         filmsLikesRepository.removeByFilmIdAndUserId(filmId,userId);
     }
