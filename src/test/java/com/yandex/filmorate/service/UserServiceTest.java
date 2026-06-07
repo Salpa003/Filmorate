@@ -1,6 +1,7 @@
 package com.yandex.filmorate.service;
 
 import com.yandex.filmorate.entity.User;
+import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.exception.UserValidateException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -88,6 +89,11 @@ public class UserServiceTest {
     }
 
     @Test
+    void deleteUnknownUser() {
+        Assertions.assertThatThrownBy(()-> userService.deleteUser(-1L)).isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
     void updateUser() {
         User user1 = User.builder()
                 .login("test")
@@ -102,6 +108,19 @@ public class UserServiceTest {
 
         Assertions.assertThat(user2.getName()).isEqualTo(user1.getName());
         userService.deleteUser(user2.getId());
+    }
+
+    @Test
+    void updateUnknownUser() {
+        User user1 = User.builder()
+                .id(-1L)
+                .login("test")
+                .birthday(LocalDate.of(2000,1,1))
+                .email("arr@gmail.com")
+                .build();
+
+
+        Assertions.assertThatThrownBy(()-> userService.updateUser(user1)).isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -125,6 +144,79 @@ public class UserServiceTest {
 
         Assertions.assertThat(users).contains(user1,user2);
 
+    }
+
+    @Test
+    void addFriend() {
+        User user1 = User.builder()
+                .login("test")
+                .birthday(LocalDate.of(2000,1,1))
+                .email("arr@gmail.com")
+                .build();
+        User user2 = User.builder()
+                .login("test2")
+                .birthday(LocalDate.of(2000,1,1))
+                .email("arr@gmail.com")
+                .build();
+        userService.addUser(user1);
+        userService.addUser(user2);
+
+        userService.addFriend(user1.getId(), user2.getId());
+
+       Assertions.assertThat(userService.getFriends(user1.getId())).isEqualTo(Set.of(user2.getId()));
+       Assertions.assertThat(userService.getFriends(user2.getId())).isEqualTo(Set.of(user1.getId()));
+
+       userService.deleteFriend(user1.getId(), user2.getId());
+        userService.deleteUser(user1.getId());
+        userService.deleteUser(user2.getId());
+    }
+
+    @Test
+    void addUnknownFriend() {
+        Assertions.assertThatThrownBy(()-> userService.addFriend(-1L,2L)).isInstanceOf(NotFoundException.class);
+    }
+    @Test
+    void deleteUnknownFriend() {
+        Assertions.assertThatThrownBy(()-> userService.deleteFriend(-1L,2L)).isInstanceOf(NotFoundException.class);
+    }
+    @Test
+    void getUnknownFriend() {
+        Assertions.assertThatThrownBy(()-> userService.getFriends(-1L)).isInstanceOf(NotFoundException.class);
+    }
+
+
+    @Test
+    void doubleFriends() {
+        User user1 = User.builder()
+                .login("test2")
+                .birthday(LocalDate.of(2000,1,1))
+                .email("arr@gmail.com")
+                .build();
+        User user2 = User.builder()
+                .login("test2")
+                .birthday(LocalDate.of(2000,1,1))
+                .email("arr@gmail.com")
+                .build();
+        User user3 = User.builder()
+                .login("test2")
+                .birthday(LocalDate.of(2000,1,1))
+                .email("arr@gmail.com")
+                .build();
+        userService.addUser(user1);
+        userService.addUser(user2);
+        userService.addUser(user3);
+
+        userService.addFriend(user1, user2);
+        userService.addFriend(user3, user2);
+
+        Set<User> users = userService.getDoubleFriends(user1, user3);
+        Assertions.assertThat(users).isEqualTo(Set.of(user2));
+
+        userService.deleteFriend(user1, user2);
+        userService.deleteFriend(user3, user2);
+        userService.deleteUser(user1.getId());
+        userService.deleteUser(user2.getId());
+        userService.deleteUser(user3.getId());
     }
 
 }
