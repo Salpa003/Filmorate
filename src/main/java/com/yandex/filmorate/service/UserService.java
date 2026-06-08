@@ -4,6 +4,7 @@ import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.model.User;
 import com.yandex.filmorate.storage.UserStorage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     @Autowired
+    @Qualifier("userDbStorage")
     private UserStorage userStorage;
 
     public void addFriend(Long user, Long friend) {

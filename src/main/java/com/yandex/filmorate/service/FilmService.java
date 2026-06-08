@@ -5,6 +5,7 @@ import com.yandex.filmorate.model.Film;
 import com.yandex.filmorate.model.User;
 import com.yandex.filmorate.storage.FilmStorage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     @Autowired
+    @Qualifier("filmDbStorage")
     private FilmStorage filmStorage;
 
     @Autowired
@@ -64,7 +66,8 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
-        return filmStorage.updateFilm(film);
+        filmStorage.updateFilm(film);
+        return film;
     }
 
     public List<Film> getAllFilms() {
