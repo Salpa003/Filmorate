@@ -2,6 +2,8 @@ package com.yandex.filmorate.service;
 
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.model.User;
+import com.yandex.filmorate.model.UsersFriends;
+import com.yandex.filmorate.repository.UsersFriendsRepository;
 import com.yandex.filmorate.storage.UserStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,15 +20,18 @@ public class UserService {
     @Qualifier("userDbStorage")
     private UserStorage userStorage;
 
+    @Autowired
+    private UsersFriendsRepository usersFriendsRepository;
+
     public void addFriend(Long user, Long friend) {
         User user1 = getUserById(user);
         User user2 = getUserById(friend);
         if (user1 == null || user2 == null)
             throw new NotFoundException("");
-        Set<Long> friends = user1.getFriends();
-        friends.add(friend);
-        Set<Long> friends1 = user2.getFriends();
-        friends1.add(user);
+        UsersFriends usersFriends1 = new UsersFriends(user1,user2);
+        UsersFriends usersFriends2 = new UsersFriends(user2,user1);
+        usersFriendsRepository.save(usersFriends1);
+        usersFriendsRepository.save(usersFriends2);
     }
 
     public void deleteFriend(Long user, Long friend) {
@@ -34,21 +39,22 @@ public class UserService {
         User user2 = getUserById(friend);
         if (user1 == null || user2 == null)
             throw new NotFoundException("");
-        Set<Long> friends = user1.getFriends();
-        friends.remove(friend);
-        Set<Long> friends2 = user2.getFriends();
-        friends2.remove(user);
+
+        usersFriendsRepository.deleteByUserAndFriend(user1,user2);
+        usersFriendsRepository.deleteByUserAndFriend(user2,user1);
     }
 
     public Set<User> getDoubleFriends(Long user, Long friend) {
-        Set<User> friends = new HashSet<>();
-        User friend1 = getUserById(friend);
-        Set<Long> longs = friend1.getFriends();
         User user1 = getUserById(user);
-        user1.getFriends().stream()
-                .forEach(id -> {
-                    if (longs.contains(id))
-                        friends.add(getUserById(id));
+        User user2 = getUserById(friend);
+        if (user1 == null || user2 == null)
+            throw new NotFoundException("");
+        Set<User> friends = new HashSet<>();
+        Set<Long> longs = user1.getFriends().stream().map(u-> u.getFriend().getId()).collect(Collectors.toSet());
+        user2.getFriends().stream()
+                .forEach( uf ->{
+                    if (longs.contains(uf.getFriend().getId()))
+                        friends.add(uf.getFriend());
                 });
         return friends;
     }
@@ -76,9 +82,7 @@ public class UserService {
         User user = getUserById(id);
         if (user == null)
             throw new NotFoundException("");
-        return user.getFriends().stream()
-                .map(l-> getUserById(l))
-                .collect(Collectors.toSet());
+        return user.getFriends().stream().map(uf -> uf.getFriend()).collect(Collectors.toSet());
     }
 
     public boolean isExist(Long id) {

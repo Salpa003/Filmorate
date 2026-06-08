@@ -13,3 +13,7 @@ public class FilmorateApplication {
     }
 
 }
+
+//TODO
+//Починить все тесты в Postman
+//Написть тесты на service + dao / repository

@@ -3,6 +3,7 @@ package com.yandex.filmorate.service;
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.model.Film;
 import com.yandex.filmorate.model.User;
+import com.yandex.filmorate.repository.FilmRepository;
 import com.yandex.filmorate.storage.FilmStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,6 +22,9 @@ public class FilmService {
     private FilmStorage filmStorage;
 
     @Autowired
+    private FilmRepository filmRepository;
+
+    @Autowired
     private UserService userService;
 
     public Film addLike(Long filmId, Long userId) {
@@ -28,7 +32,8 @@ public class FilmService {
         Film film = filmStorage.getFilmById(filmId);
         if (user == null || film == null)
             throw new NotFoundException("");
-        film.getLikes().add(userId);
+        film.getLikes().add(user);
+        filmRepository.save(film);
         return film;
     }
 
@@ -37,24 +42,12 @@ public class FilmService {
         if (film == null || user == null)
             throw new NotFoundException("");
         film.getLikes().remove(userId);
+        filmRepository.save(film);
     }
 
-    public List<Film> getTopFilms(Long count) {
-        List<Film> set = filmStorage.getAllFilms().stream()
-                .sorted((f1, f2) -> {
-                    Set<Long> s1 = f1.getLikes();
-                    Set<Long> s2 = f2.getLikes();
-                    if (s1 == null)
-                        s1 = new HashSet<>();
-                    if (s2 == null)
-                        s2 = new HashSet<>();
-                    return Integer.compare(s2.size(), s1.size());
-                })
-                .limit(count)
-                .collect(Collectors.toList());
-        if (set == null)
-            set = new ArrayList<>();
-        return set;
+    public List<Film> getTopFilms(Integer count) {
+        List<Long> topFilmsId = filmRepository.getTopFilms(count);
+        return topFilmsId.stream().map(filmStorage::getFilmById).collect(Collectors.toList());
     }
 
     public void addFilm(Film film) {

@@ -6,29 +6,27 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "genre")
+public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String email;
-    private String login;
-    private String  name;
-    private LocalDate birthday;
+    private Integer id;
 
-    @OneToMany(mappedBy = "user")
-    private Set<UsersFriends> friends;
+    private String name;
 
     @Builder.Default
-    @ManyToMany(mappedBy = "likes")
+    @ManyToMany(mappedBy = "genres")
     private Set<Film> films = new HashSet<>();
+
+    public Genre(String name) {
+        this.name = name;
+    }
 }
