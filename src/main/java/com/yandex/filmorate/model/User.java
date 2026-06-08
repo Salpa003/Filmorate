@@ -1,30 +1,22 @@
-package com.yandex.filmorate.entity;
+package com.yandex.filmorate.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "users")
+@NoArgsConstructor
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String email;
-
     private String login;
-
-    private String name;
-
+    private String  name;
     private LocalDate birthday;
+    private Set<Long> friends;
+    private Map<Long, Boolean> friendsA;
 }

@@ -1,154 +1,85 @@
 package com.yandex.filmorate.service;
 
-import com.yandex.filmorate.dto.mappers.UserReadDtoMapper;
-import com.yandex.filmorate.dto.users.UserReadDto;
-import com.yandex.filmorate.entity.User;
-import com.yandex.filmorate.entity.UsersFriends;
 import com.yandex.filmorate.exception.NotFoundException;
-import com.yandex.filmorate.exception.UserValidateException;
-import com.yandex.filmorate.repository.UserRepository;
-import com.yandex.filmorate.repository.UsersFriendsRepository;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import com.yandex.filmorate.model.User;
+import com.yandex.filmorate.storage.UserStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class UserService {
-
     @Autowired
-    private UserRepository userRepository;
+    private UserStorage userStorage;
 
-    @Autowired
-    private UsersFriendsRepository usersFriendsRepository;
+    public void addFriend(Long user, Long friend) {
+        User user1 = getUserById(user);
+        User user2 = getUserById(friend);
+        if (user1 == null || user2 == null)
+            throw new NotFoundException("");
+        Set<Long> friends = user1.getFriends();
+        friends.add(friend);
+        Set<Long> friends1 = user2.getFriends();
+        friends1.add(user);
+    }
 
-    @Autowired
-    private UserReadDtoMapper userReadDtoMapper;
+    public void deleteFriend(Long user, Long friend) {
+        User user1 = getUserById(user);
+        User user2 = getUserById(friend);
+        if (user1 == null || user2 == null)
+            throw new NotFoundException("");
+        Set<Long> friends = user1.getFriends();
+        friends.remove(friend);
+        Set<Long> friends2 = user2.getFriends();
+        friends2.remove(user);
+    }
 
-    @Transactional
+    public Set<User> getDoubleFriends(Long user, Long friend) {
+        Set<User> friends = new HashSet<>();
+        User friend1 = getUserById(friend);
+        Set<Long> longs = friend1.getFriends();
+        User user1 = getUserById(user);
+        user1.getFriends().stream()
+                .forEach(id -> {
+                    if (longs.contains(id))
+                        friends.add(getUserById(id));
+                });
+        return friends;
+    }
     public void addUser(User user) {
-        validate(user);
-        userRepository.save(user);
+        userStorage.addUser(user);
     }
 
-    @Transactional
+    public void deleteUser(Long userId) {
+        userStorage.deleteUser(userId);
+    }
+
     public void updateUser(User user) {
-        validate(user);
-        Optional<User> byId = userRepository.findById(user.getId());
-        if (byId.isEmpty())
-            throw new NotFoundException("User not found!");
-        userRepository.save(user);
+        userStorage.updateUser(user);
     }
 
-    @Transactional
+    public List<User> getAllUsers() {
+        return userStorage.getAllUsers();
+    }
+
     public User getUserById(Long id) {
-        return userRepository.findById(id).get();
+        return userStorage.getUserById(id);
     }
 
-    @Transactional
-    public Set<User> getAllUsers() {
-        return userRepository.findAll().stream().collect(Collectors.toSet());
-    }
-
-    @Transactional
-    public void deleteUser(Long id) {
-        Optional<User> byId = userRepository.findById(id);
-        if (byId.isEmpty())
-           throw new NotFoundException("");
-        userRepository.deleteById(id);
-    }
-
-    @Transactional
-    public UserReadDto addFriend(Long userId, Long friendId) {
-        Optional<User> user = userRepository.findById(userId);
-        Optional<User> friend = userRepository.findById(friendId);
-        if (user.isEmpty() || friend.isEmpty())
+    public Set<User> getFriends(Long id) {
+        User user = getUserById(id);
+        if (user == null)
             throw new NotFoundException("");
-        UsersFriends usersFriends1 = new UsersFriends(userId,friendId);
-        UsersFriends usersFriends2 = new UsersFriends(friendId, userId);
-
-        boolean b1 = usersFriendsRepository.existsByUserIdAndFriendId(userId, friendId);
-        boolean b2 = usersFriendsRepository.existsByUserIdAndFriendId(friendId, userId);
-        if (!b1 && !b2) {
-            usersFriendsRepository.save(usersFriends1);
-            usersFriendsRepository.save(usersFriends2);
-        }
-        return userReadDtoMapper.map(user.get());
+        return user.getFriends().stream()
+                .map(l-> getUserById(l))
+                .collect(Collectors.toSet());
     }
 
-    @Transactional
-    public UserReadDto addFriend(User user1, User user2) {
-       return addFriend(user1.getId(), user2.getId());
-    }
-
-    @Transactional
-    public void deleteFriend(Long userId, Long friendId) {
-        Optional<User> user = userRepository.findById(userId);
-        Optional<User> friend = userRepository.findById(friendId);
-        if (user.isEmpty() || friend.isEmpty())
-            throw new NotFoundException("");
-        usersFriendsRepository.removeByUserIdAndFriendId(userId,friendId);
-        usersFriendsRepository.removeByUserIdAndFriendId(friendId,userId);
-    }
-
-    @Transactional
-    public void deleteFriend(User user1, User user2) {
-        deleteFriend(user1.getId(), user2.getId());
-    }
-
-    @Transactional
-    public Set<User> getDoubleFriends(Long user1id, Long user2id) {
-        Set<Long> user1friends = usersFriendsRepository.getFriends(user1id);
-        Set<Long> user2friends = usersFriendsRepository.getFriends(user2id);
-        Set<Long> doubleFriends = new HashSet<>();
-        for (Long a1 : user1friends) {
-            for (Long a2: user2friends) {
-                if (a1 == a2)
-                    doubleFriends.add(a1);
-            }
-        }
-        return doubleFriends.stream().map(userRepository::findById).map(a-> a.get()).collect(Collectors.toSet());
-    }
-
-    @Transactional
-    public Set<User> getDoubleFriends(User user1, User user2) {
-        return getDoubleFriends(user1.getId(), user2.getId());
-    }
-
-    @Transactional
-    public Set<Long> getFriends(Long userId) {
-        Optional<User> byId = userRepository.findById(userId);
-        if (byId.isEmpty())
-            throw new NotFoundException("");
-        return usersFriendsRepository.getFriends(userId);
-    }
-
-    @Transactional
-    public boolean exist(Long id) {
-        return userRepository.existsById(id);
-    }
-    public void validate(User user) {
-        String errorMessage = null;
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@"))
-            errorMessage = "email dont correct!";
-        else if (user.getLogin().isBlank() || user.getLogin().contains(" "))
-            errorMessage = "login dont correct!";
-        else if (user.getBirthday().isAfter(LocalDate.now()))
-            errorMessage = "birthday dont correct!";
-        if (user.getName() == null || user.getName().isBlank())
-            user.setName(user.getLogin());
-
-        if (errorMessage!= null) {
-            log.warn("Validate error {} {}", user, errorMessage);
-            throw new UserValidateException(errorMessage);
-        }
+    public boolean isExist(Long id) {
+        return userStorage.isExist(id);
     }
 }

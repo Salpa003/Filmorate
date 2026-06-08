@@ -9,29 +9,21 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ErrorHandler {
-
-    @ExceptionHandler
-    @ResponseStatus
-    public Map<String,String> handle(final RuntimeException exception) {
-        return Map.of("error", exception.getMessage());
-    }
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String,String> handle(final UserValidateException exception) {
-        return Map.of("error", exception.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String,String> handle(final FilmValidateException exception) {
-        return Map.of("error", exception.getMessage());
+    public Map<String,String> handle(final ValidationException e) {
+        return Map.of("error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String,String> handle(final NotFoundException exception) {
-        return Map.of("error", exception.getMessage());
+    public Map<String,String> handle(final NotFoundException e) {
+        return Map.of("error", e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String,String> handle(final RuntimeException e) {
+        return Map.of("error", e.getMessage());
+    }
 }

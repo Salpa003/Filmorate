@@ -1,111 +1,84 @@
 package com.yandex.filmorate.service;
 
-
-import com.yandex.filmorate.entity.Film;
-import com.yandex.filmorate.entity.FilmsLikes;
-import com.yandex.filmorate.entity.User;
-import com.yandex.filmorate.exception.FilmValidateException;
 import com.yandex.filmorate.exception.NotFoundException;
-import com.yandex.filmorate.repository.FilmRepository;
-import com.yandex.filmorate.repository.FilmsLikesRepository;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import com.yandex.filmorate.model.Film;
+import com.yandex.filmorate.model.User;
+import com.yandex.filmorate.storage.FilmStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class FilmService {
-
     @Autowired
-    private FilmRepository filmRepository;
-
-    @Autowired
-    private FilmsLikesRepository filmsLikesRepository;
+    private FilmStorage filmStorage;
 
     @Autowired
     private UserService userService;
 
-    @Transactional
-    public void addFilm(Film film) {
-        validate(film);
-        filmRepository.save(film);
-    }
-
-    @Transactional
-    public void updateFilm(Film film) {
-        validate(film);
-        Optional<Film> byId = filmRepository.findById(film.getId());
-        if (byId.isEmpty())
-            throw new NotFoundException("");
-        filmRepository.save(film);
-    }
-
-    @Transactional
-    public Film getFilmById(Long id) {
-        return filmRepository.findById(id).get();
-    }
-
-    @Transactional
-    public Set<Film> getAllFilms() {
-        return filmRepository.findAll().stream().collect(Collectors.toSet());
-    }
-
-    @Transactional
-    public Film deleteFilm(Long id) {
-        Optional<Film> byId = filmRepository.findById(id);
-        if (byId.isEmpty())
-            throw new NotFoundException("");
-        filmRepository.deleteById(id);
-        return byId.get();
-    }
-
-    @Transactional
-    public void addLike(Long filmId, Long userId) {
+    public Film addLike(Long filmId, Long userId) {
         User user = userService.getUserById(userId);
-        Optional<Film> byId = filmRepository.findById(filmId);
-        if (user == null || byId.isEmpty())
+        Film film = filmStorage.getFilmById(filmId);
+        if (user == null || film == null)
             throw new NotFoundException("");
-        FilmsLikes filmsLikes = new FilmsLikes(filmId,userId);
-        filmsLikesRepository.save(filmsLikes);
+        film.getLikes().add(userId);
+        return film;
     }
 
-    @Transactional
-    public void deleteLike(Long filmId, Long userId) {
-        Optional<Film> byId = filmRepository.findById(filmId);
-        if (!userService.exist(userId) || byId.isEmpty())
+    public void deleteLike(Film film, Long userId) {
+        User user = userService.getUserById(userId);
+        if (film == null || user == null)
             throw new NotFoundException("");
-        filmsLikesRepository.removeByFilmIdAndUserId(filmId,userId);
+        film.getLikes().remove(userId);
     }
 
-    @Transactional
-    public Set<Long> getTopFilms(Long count) {
-        return filmsLikesRepository.getTopFilms(count);
+    public List<Film> getTopFilms(Long count) {
+        List<Film> set = filmStorage.getAllFilms().stream()
+                .sorted((f1, f2) -> {
+                    Set<Long> s1 = f1.getLikes();
+                    Set<Long> s2 = f2.getLikes();
+                    if (s1 == null)
+                        s1 = new HashSet<>();
+                    if (s2 == null)
+                        s2 = new HashSet<>();
+                    return Integer.compare(s2.size(), s1.size());
+                })
+                .limit(count)
+                .collect(Collectors.toList());
+        if (set == null)
+            set = new ArrayList<>();
+        return set;
     }
 
-    private final LocalDate FIRST_FILM_RELEASE = LocalDate.of(1895, 12, 28);
+    public void addFilm(Film film) {
+        filmStorage.addFilm(film);
+    }
 
-    public void validate(Film film) {
-        String errorMessage = null;
-        if (film.getName() == null || film.getName().isBlank()) {
-            errorMessage = "name dont correct!";
-        } else if (film.getDescription().length() > 200) {
-            errorMessage = "description length gt 200!";
-        } else if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE)) {
-            errorMessage = "release date dont correct!";
-        } else if (film.getDuration() <= 0) {
-            errorMessage = "duration dont correct!";
-        }
+    public void deleteFilm(Long id) {
+        filmStorage.deleteFilm(id);
+    }
 
-        if (errorMessage != null) {
-            log.warn("Validate error {} {}", film, errorMessage);
-            throw new FilmValidateException(errorMessage);
-        }
+    public Film updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
+    }
+
+    public List<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
+    }
+
+    public Film getFilmById(Long id) {
+        return filmStorage.getFilmById(id);
+    }
+
+    public boolean isExist(Long filmId) {
+        return filmStorage.isExist(filmId);
     }
 
 }
+
+
