@@ -27,9 +27,8 @@ public class UserService {
     @Transactional
     public void addFriend(Long user, Long friend) {
         User user1 = getUserById(user);
-        User user2 = getUserById(friend);
-        if (user1 == null || user2 == null)
-            throw new NotFoundException("");
+        User user2 = getUserById(friend); // throw exception
+
         UsersFriends usersFriends1 = new UsersFriends(user1, user2);
         UsersFriends usersFriends2 = new UsersFriends(user2, user1);
         usersFriendsRepository.save(usersFriends1);
@@ -39,9 +38,7 @@ public class UserService {
     @Transactional
     public void deleteFriend(Long user, Long friend) {
         User user1 = getUserById(user);
-        User user2 = getUserById(friend);
-        if (user1 == null || user2 == null)
-            throw new NotFoundException("");
+        User user2 = getUserById(friend); // throw exception
 
         usersFriendsRepository.deleteByUserAndFriend(user1, user2);
         usersFriendsRepository.deleteByUserAndFriend(user2, user1);
@@ -49,18 +46,14 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Set<User> getFriends(Long id) {
-        User user = getUserById(id);
-        if (user == null)
-            throw new NotFoundException("");
+        User user = getUserById(id); // throw exception
         return user.getFriends().stream().map(uf -> uf.getFriend()).collect(Collectors.toSet());
     }
 
     @Transactional(readOnly = true)
     public Set<User> getDoubleFriends(Long user, Long friend) {
-        User user1 = getUserById(user);
-        User user2 = getUserById(friend);
-        if (user1 == null || user2 == null)
-            throw new NotFoundException("");
+        User user1 = getUserById(user); //
+        User user2 = getUserById(friend); // throw exception
         Set<User> friends = new HashSet<>();
         Set<Long> longs = user1.getFriends().stream().map(u -> u.getFriend().getId()).collect(Collectors.toSet());
         user2.getFriends().stream()
@@ -78,11 +71,15 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId) {
+       if (!isExist(userId))
+           throw new NotFoundException("");
         userStorage.deleteUser(userId);
     }
 
     @Transactional
     public void updateUser(User user) {
+        if (!isExist(user.getId()))
+            throw new NotFoundException("");
         userStorage.updateUser(user);
     }
 
@@ -92,7 +89,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User getUserById(Long id) {
+    public User getUserById(Long id) { // should throw exception
+        if (!isExist(id))
+            throw new NotFoundException("");
         return userStorage.getUserById(id);
     }
 
