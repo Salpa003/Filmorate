@@ -1,5 +1,6 @@
 package com.yandex.filmorate.storage;
 
+
 import com.yandex.filmorate.model.User;
 import org.springframework.stereotype.Component;
 

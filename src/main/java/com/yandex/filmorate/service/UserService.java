@@ -2,13 +2,9 @@ package com.yandex.filmorate.service;
 
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.model.User;
-import com.yandex.filmorate.model.UsersFriends;
-import com.yandex.filmorate.repository.UsersFriendsRepository;
 import com.yandex.filmorate.storage.UserStorage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,84 +14,71 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     @Autowired
-    @Qualifier("userDbStorage")
     private UserStorage userStorage;
 
-    @Autowired
-    private UsersFriendsRepository usersFriendsRepository;
-
-    @Transactional
     public void addFriend(Long user, Long friend) {
         User user1 = getUserById(user);
-        User user2 = getUserById(friend); // throw exception
-
-        UsersFriends usersFriends1 = new UsersFriends(user1, user2);
-        UsersFriends usersFriends2 = new UsersFriends(user2, user1);
-        usersFriendsRepository.save(usersFriends1);
-        usersFriendsRepository.save(usersFriends2);
+        User user2 = getUserById(friend);
+        if (user1 == null || user2 == null)
+            throw new NotFoundException("");
+        Set<Long> friends = user1.getFriends();
+        friends.add(friend);
+        Set<Long> friends1 = user2.getFriends();
+        friends1.add(user);
     }
 
-    @Transactional
     public void deleteFriend(Long user, Long friend) {
         User user1 = getUserById(user);
-        User user2 = getUserById(friend); // throw exception
-
-        usersFriendsRepository.deleteByUserAndFriend(user1, user2);
-        usersFriendsRepository.deleteByUserAndFriend(user2, user1);
+        User user2 = getUserById(friend);
+        if (user1 == null || user2 == null)
+            throw new NotFoundException("");
+        Set<Long> friends = user1.getFriends();
+        friends.remove(friend);
+        Set<Long> friends2 = user2.getFriends();
+        friends2.remove(user);
     }
 
-    @Transactional(readOnly = true)
-    public Set<User> getFriends(Long id) {
-        User user = getUserById(id); // throw exception
-        return user.getFriends().stream().map(uf -> uf.getFriend()).collect(Collectors.toSet());
-    }
-
-    @Transactional(readOnly = true)
     public Set<User> getDoubleFriends(Long user, Long friend) {
-        User user1 = getUserById(user); //
-        User user2 = getUserById(friend); // throw exception
         Set<User> friends = new HashSet<>();
-        Set<Long> longs = user1.getFriends().stream().map(u -> u.getFriend().getId()).collect(Collectors.toSet());
-        user2.getFriends().stream()
-                .forEach(uf -> {
-                    if (longs.contains(uf.getFriend().getId()))
-                        friends.add(uf.getFriend());
+        User friend1 = getUserById(friend);
+        Set<Long> longs = friend1.getFriends();
+        User user1 = getUserById(user);
+        user1.getFriends().stream()
+                .forEach(id -> {
+                    if (longs.contains(id))
+                        friends.add(getUserById(id));
                 });
         return friends;
     }
-
-    @Transactional
     public void addUser(User user) {
         userStorage.addUser(user);
     }
 
-    @Transactional
     public void deleteUser(Long userId) {
-       if (!isExist(userId))
-           throw new NotFoundException("");
         userStorage.deleteUser(userId);
     }
 
-    @Transactional
     public void updateUser(User user) {
-        if (!isExist(user.getId()))
-            throw new NotFoundException("");
         userStorage.updateUser(user);
     }
 
-    @Transactional(readOnly = true)
     public List<User> getAllUsers() {
         return userStorage.getAllUsers();
     }
 
-    @Transactional(readOnly = true)
-    public User getUserById(Long id) { // should throw exception
-        if (!isExist(id))
-            throw new NotFoundException("");
+    public User getUserById(Long id) {
         return userStorage.getUserById(id);
     }
 
-    @Transactional(readOnly = true)
+    public Set<User> getFriends(Long id) {
+        User user = getUserById(id);
+        if (user == null)
+            throw new NotFoundException("");
+        return user.getFriends().stream()
+                .map(l-> getUserById(l))
+                .collect(Collectors.toSet());
+    }
+
     public boolean isExist(Long id) {
         return userStorage.isExist(id);
     }

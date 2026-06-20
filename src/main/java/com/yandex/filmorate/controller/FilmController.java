@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -31,14 +31,16 @@ public class FilmController {
         return film;
     }
 
-    @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Long id) {
-        return filmService.getFilmById(id);
-    }
+//    @GetMapping("/{id}")
+//    public Film getFilmById(@PathVariable Long id) {
+//        return filmService.getFilmById(id);
+//    }
 
     @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable Long id, @PathVariable Long userId) {
-       return filmService.addLike(id, userId);
+        Film film = filmService.getFilmById(id);
+        filmService.addLike(film, userId);
+        return film;
     }
 
     @PostMapping
@@ -61,10 +63,9 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(required = false) Integer count) {
+    public List<Film> getPopularFilms(@RequestParam(required = false) Long count) {
         if (count == null)
-            return filmService.getTopFilms(10
-            );
+            return filmService.getTopFilms(10L);
         else {
             return filmService.getTopFilms(count);
         }

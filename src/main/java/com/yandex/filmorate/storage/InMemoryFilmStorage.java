@@ -1,5 +1,6 @@
 package com.yandex.filmorate.storage;
 
+
 import com.yandex.filmorate.model.Film;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage {
+public class InMemoryFilmStorage implements FilmStorage{
     private static final Map<Long, Film> films = new HashMap<>();
     private static Long id = 1L;
     @Override
@@ -26,8 +27,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         films.replace(film.getId(),film);
+        return film;
     }
 
     @Override

@@ -1,8 +1,6 @@
 package com.yandex.filmorate.storage;
 
-
 import com.yandex.filmorate.model.User;
-
 import java.util.List;
 
 public interface UserStorage {

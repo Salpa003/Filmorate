@@ -1,5 +1,6 @@
 package com.yandex.filmorate.controller;
 
+
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.exception.ValidationException;
 import com.yandex.filmorate.model.User;
@@ -7,6 +8,7 @@ import com.yandex.filmorate.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +40,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
+    public User updateUser( @RequestBody User user) {
         if (!userService.isExist(user.getId())) {
             throw new NotFoundException("Not found my");
         }
