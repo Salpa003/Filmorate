@@ -4,8 +4,11 @@ package com.yandex.filmorate.service;
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.model.Film;
 import com.yandex.filmorate.model.User;
+import com.yandex.filmorate.storage.FilmStorage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,63 +19,60 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     @Autowired
-    private com.yandex.filmorate.storage.FilmStorage filmStorage;
+//    @Qualifier("inMemoryFilmStorage")
+    @Qualifier("dbFilmStorage")
+    private FilmStorage filmStorage;
 
     @Autowired
-    private com.yandex.filmorate.service.UserService userService;
+    private UserService userService;
 
-    public void addLike(Film film, Long userId) {
+    @Transactional
+    public void addLike(Long filmId, Long userId) {
         User user = userService.getUserById(userId);
+        Film film = getFilmById(filmId);
         if (user == null || film == null)
             throw new NotFoundException("");
-        film.getLikes().add(userId);
+        filmStorage.addLike(film, user);
     }
 
-    public void deleteLike(Film film, Long userId) {
+    @Transactional
+    public void deleteLike(Long filmId, Long userId) {
         User user = userService.getUserById(userId);
+        Film film = getFilmById(filmId);
         if (film == null || user == null)
             throw new NotFoundException("");
-        film.getLikes().remove(userId);
+        filmStorage.deleteLike(film, user);
     }
 
-    public List<Film> getTopFilms(Long count) {
-        List<Film> set = filmStorage.getAllFilms().stream()
-                .sorted((f1, f2) -> {
-                    Set<Long> s1 = f1.getLikes();
-                    Set<Long> s2 = f2.getLikes();
-                    if (s1 == null)
-                        s1 = new HashSet<>();
-                    if (s2 == null)
-                        s2 = new HashSet<>();
-                    return Integer.compare(s2.size(), s1.size());
-                })
-                .limit(count)
-                .collect(Collectors.toList());
-        if (set == null)
-            set = new ArrayList<>();
-        return set;
+    @Transactional(readOnly = true)
+    public List<Film> getTopFilms(Integer count) {
+        return filmStorage.getTopFilms(count);
     }
 
+    @Transactional
     public void addFilm(Film film) {
         filmStorage.addFilm(film);
     }
 
+    @Transactional
     public void deleteFilm(Long id) {
         filmStorage.deleteFilm(id);
     }
 
+    @Transactional
     public Film updateFilm(Film film) {
         return filmStorage.updateFilm(film);
     }
 
+    @Transactional(readOnly = true)
     public List<Film> getAllFilms() {
         return filmStorage.getAllFilms();
     }
-
+    @Transactional(readOnly = true)
     public Film getFilmById(Long id) {
         return filmStorage.getFilmById(id);
     }
-
+    @Transactional(readOnly = true)
     public boolean isExist(Long filmId) {
         return filmStorage.isExist(filmId);
     }

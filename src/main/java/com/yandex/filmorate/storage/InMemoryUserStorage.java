@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -43,5 +45,28 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public boolean isExist(Long id) {
         return users.containsKey(id);
+    }
+
+    @Override
+    public void addFriend(User user, User friend) {
+        Set<Long> friends = user.getFriends();
+        friends.add(friend.getId());
+        Set<Long> friends1 = friend.getFriends();
+        friends1.add(user.getId());
+    }
+
+    @Override
+    public void deleteFriend(User user1, User user2) {
+        Set<Long> friends = user1.getFriends();
+        friends.remove(user2.getId());
+        Set<Long> friends2 = user2.getFriends();
+        friends2.remove(user1.getId());
+    }
+
+    @Override
+    public Set<User> getFriends(User user) {
+        return user.getFriends().stream()
+                .map(l -> getUserById(l))
+                .collect(Collectors.toSet());
     }
 }

@@ -7,6 +7,7 @@ import com.yandex.filmorate.service.FilmService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,21 +27,14 @@ public class FilmController {
     }
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
-        Film film = filmService.getFilmById(id);
-        filmService.deleteLike(film,userId);
-        return film;
+        filmService.deleteLike(id,userId);
+        return filmService.getFilmById(id);
     }
-
-//    @GetMapping("/{id}")
-//    public Film getFilmById(@PathVariable Long id) {
-//        return filmService.getFilmById(id);
-//    }
 
     @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable Long id, @PathVariable Long userId) {
-        Film film = filmService.getFilmById(id);
-        filmService.addLike(film, userId);
-        return film;
+        filmService.addLike(id, userId);
+        return filmService.getFilmById(id);
     }
 
     @PostMapping
@@ -63,15 +57,9 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(required = false) Long count) {
-        if (count == null)
-            return filmService.getTopFilms(10L);
-        else {
-            return filmService.getTopFilms(count);
-        }
+    public List<Film> getPopularFilms(@RequestParam(required = false) Integer count) {
+        return filmService.getTopFilms(count == null? 10 : count);
     }
-
-
 
     public void validateFilm(Film film) {
         String message = null;

@@ -30,7 +30,7 @@ CREATE TABLE genre
 );
 
 --changeset salpa:5
-CREATE TABLE film
+CREATE TABLE filmDto
 (
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(255),
@@ -43,7 +43,7 @@ CREATE TABLE film
 --changeset salpa:6
 CREATE TABLE films_likes
 (
-    film_id BIGINT REFERENCES film (id),
+    film_id BIGINT REFERENCES filmDto (id),
     user_id BIGINT REFERENCES users (id),
     PRIMARY KEY (film_id, user_id)
 );
@@ -51,7 +51,7 @@ CREATE TABLE films_likes
 --changeset salpa:7
 CREATE TABLE films_genres
 (
-    film_id BIGINT REFERENCES film (id),
+    film_id BIGINT REFERENCES filmDto (id),
     genre_id BIGINT REFERENCES genre(id),
     PRIMARY KEY (film_id, genre_id)
 );

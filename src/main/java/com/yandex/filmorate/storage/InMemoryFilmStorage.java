@@ -2,12 +2,11 @@ package com.yandex.filmorate.storage;
 
 
 import com.yandex.filmorate.model.Film;
+import com.yandex.filmorate.model.User;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -45,5 +44,30 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public boolean isExist(Long id) {
         return films.containsKey(id);
+    }
+
+    @Override
+    public void addLike(Film film, User user) {
+        film.getLikes().add(user.getId());
+    }
+
+    @Override
+    public void deleteLike(Film film, User user) {
+        film.getLikes().remove(user.getId());
+    }
+
+    @Override
+    public List<Film> getTopFilms(int count) {
+       return films.values().stream().sorted((f1, f2) -> {
+                    Set<Long> s1 = f1.getLikes();
+                    Set<Long> s2 = f2.getLikes();
+                    if (s1 == null)
+                        s1 = new HashSet<>();
+                    if (s2 == null)
+                        s2 = new HashSet<>();
+                    return Integer.compare(s2.size(), s1.size());
+                })
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }
