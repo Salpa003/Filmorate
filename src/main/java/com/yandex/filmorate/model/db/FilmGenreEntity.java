@@ -18,4 +18,9 @@ public class FilmGenreEntity {
     private Long filmId;
 
     private Long genreId;
+
+    public FilmGenreEntity(Long filmId, Long genreId) {
+        this.filmId = filmId;
+        this.genreId = genreId;
+    }
 }

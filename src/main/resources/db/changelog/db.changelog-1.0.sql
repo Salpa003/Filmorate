@@ -20,7 +20,7 @@ CREATE TABLE users_friends
 );
 
 --changeset salpa:3
-CREATE INDEX idx_users_friends_user_id ON users_friends(user_id);
+CREATE INDEX idx_users_friends_user_id ON users_friends (user_id);
 
 --changeset salpa:4
 CREATE TABLE genres
@@ -30,30 +30,45 @@ CREATE TABLE genres
 );
 
 --changeset salpa:5
-CREATE TABLE films
+CREATE TABLE rating
 (
-    id          BIGSERIAL PRIMARY KEY,
-    name        VARCHAR(255),
-    description TEXT,
-    release_date DATE,
-    duration    INT,
-    rating      VARCHAR(30)
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(10) UNIQUE NOT NULL
 );
 
 --changeset salpa:6
-CREATE TABLE films_likes
+CREATE TABLE films
 (
-    id BIGSERIAL PRIMARY KEY,
-    film_id BIGINT REFERENCES films (id),
-    user_id BIGINT REFERENCES users (id),
-    UNIQUE(film_id, user_id)
+    id           BIGSERIAL PRIMARY KEY,
+    name         VARCHAR(255),
+    description  TEXT,
+    release_date DATE,
+    duration     INT,
+    rating       VARCHAR(30) REFERENCES rating (name)
 );
 
 --changeset salpa:7
+CREATE TABLE films_likes
+(
+    id      BIGSERIAL PRIMARY KEY,
+    film_id BIGINT REFERENCES films (id),
+    user_id BIGINT REFERENCES users (id),
+    UNIQUE (film_id, user_id)
+);
+
+--changeset salpa:8
 CREATE TABLE films_genres
 (
-    id BIGSERIAL PRIMARY KEY,
-    film_id BIGINT REFERENCES films (id),
-    genre_id BIGINT REFERENCES genres(id),
-    UNIQUE(film_id, genre_id)
+    id       BIGSERIAL PRIMARY KEY,
+    film_id  BIGINT REFERENCES films (id),
+    genre_id BIGINT REFERENCES genres (id),
+    UNIQUE (film_id, genre_id)
 );
+
+-- changeset salpa:9
+INSERT INTO  rating(name)
+VALUES ('0+'),
+       ('6+'),
+       ('12+'),
+       ('16+'),
+       ('18+')

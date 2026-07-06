@@ -17,6 +17,9 @@ public class DbFilmStorage implements FilmStorage {
     private FilmRepository filmRepository;
 
     @Autowired
+    private GenreRepository genreRepository;
+
+    @Autowired
     private FilmLikeRepository filmLikeRepository;
 
     @Autowired
@@ -30,7 +33,14 @@ public class DbFilmStorage implements FilmStorage {
         FilmEntity filmEntity = mapper.map(film);
         filmRepository.save(filmEntity);
         film.setId(filmEntity.getId());
+        Set<String> genres = film.getGenre();
+        List<FilmGenreEntity> list = genres.stream()
+                .map(name -> genreRepository.findByName(name))
+                .map(id -> new FilmGenreEntity(film.getId(), id)).collect(Collectors.toList());
+        filmGenreRepository.saveAll(list);
     }
+    //    При создании и получении фильмов достаточно передать список идентификаторов жанров и идентификатор рейтинга.
+//    Эти же данные должны передаваться при обновлении, создании и получении фильмов — если нужно, обновите эти эндпоинты.
 
     @Override
     public void deleteFilm(Long id) {
