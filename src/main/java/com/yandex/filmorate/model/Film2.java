@@ -1,5 +1,6 @@
 package com.yandex.filmorate.model;
 
+import com.yandex.filmorate.model.db.RatingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,5 @@ public class Film2 {
     private Integer duration;
     private Set<Long> likes;
     private Set<GenreView> genres;
-    private String rating;
+    private RatingEntity mpa;
 }

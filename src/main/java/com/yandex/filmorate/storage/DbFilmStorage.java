@@ -9,6 +9,7 @@ import com.yandex.filmorate.model.db.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,6 +24,8 @@ public class DbFilmStorage implements FilmStorage {
     private GenreRepository genreRepository;
 
     @Autowired
+    private RatingRepository ratingRepository;
+    @Autowired
     private FilmLikeRepository filmLikeRepository;
 
     @Autowired
@@ -36,6 +39,15 @@ public class DbFilmStorage implements FilmStorage {
         FilmEntity filmEntity = mapper.map(film);
         filmRepository.save(filmEntity);
         film.setId(filmEntity.getId());
+
+
+        Set<Long> likes = film.getLikes();
+        if (likes == null)
+            film.setLikes(new HashSet<>());
+        RatingEntity mpa = film.getMpa();
+        mpa = ratingRepository.findById(mpa.getId()).orElse(null);
+        film.setMpa(mpa);
+
         Set<GenreView> genres = film.getGenres();
         if (genres == null)
             throw new NotFoundException("Genre not found!");

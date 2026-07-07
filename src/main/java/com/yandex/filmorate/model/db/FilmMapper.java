@@ -16,7 +16,7 @@ public class FilmMapper {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
-                film.getRating()
+                film.getMpa().getName()
                 );
     }
 
