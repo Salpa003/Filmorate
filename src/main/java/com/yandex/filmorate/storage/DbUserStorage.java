@@ -62,18 +62,13 @@ public class DbUserStorage implements UserStorage{
                 .userId(user.getId())
                 .friendId(friend.getId())
                 .build();
-        UsersFriendsEntity entity2 =UsersFriendsEntity.builder()
-                .userId(friend.getId())
-                .friendId(user.getId())
-                .build();
         userFriendRepository.save(entity1);
-        userFriendRepository.save(entity2);
     }
 
     @Override
     public void deleteFriend(User user, User friend) {
         userFriendRepository.deleteByUserIdAndFriendId(user.getId(), friend.getId());
-        userFriendRepository.deleteByUserIdAndFriendId(friend.getId(), user.getId());
+//        userFriendRepository.deleteByUserIdAndFriendId(friend.getId(), user.getId());
     }
 
     @Override

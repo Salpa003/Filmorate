@@ -1,5 +1,6 @@
 package com.yandex.filmorate.storage;
 
+import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.model.Film;
 import com.yandex.filmorate.model.User;
 import com.yandex.filmorate.model.db.*;
@@ -34,14 +35,21 @@ public class DbFilmStorage implements FilmStorage {
         filmRepository.save(filmEntity);
         film.setId(filmEntity.getId());
         Set<String> genres = film.getGenre();
-        List<FilmGenreEntity> list = genres.stream()
-                .map(name -> genreRepository.findByName(name))
+        if (genres == null)
+            throw new NotFoundException("Genre not found!");
+        for (String str: genres) {
+            boolean b = genreRepository.existsByName(str);
+            if (!b)
+                throw new NotFoundException("Genre not found!");
+        }
+
+        List<Long> ids = genres.stream()
+                .map(name -> genreRepository.findByName(name)).toList();
+
+        List<FilmGenreEntity> list = ids.stream()
                 .map(id -> new FilmGenreEntity(film.getId(), id)).collect(Collectors.toList());
         filmGenreRepository.saveAll(list);
     }
-    //    При создании и получении фильмов достаточно передать список идентификаторов жанров и идентификатор рейтинга.
-//    Эти же данные должны передаваться при обновлении, создании и получении фильмов — если нужно, обновите эти эндпоинты.
-
     @Override
     public void deleteFilm(Long id) {
         filmRepository.deleteById(id);
@@ -49,8 +57,9 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        FilmEntity filmEntity = mapper.map(film);
-        filmRepository.save(filmEntity);
+//        FilmEntity filmEntity = mapper.map(film);
+//        filmRepository.save(filmEntity);
+        addFilm(film);
         return film;
     }
 

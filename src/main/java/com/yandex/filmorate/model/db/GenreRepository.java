@@ -11,4 +11,6 @@ public interface GenreRepository extends JpaRepository<GenreEntity,Long> {
      WHERE ge.name = :name
     """)
     Long findByName(String name);
+
+    boolean existsByName(String name);
 }
