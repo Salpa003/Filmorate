@@ -1,7 +1,7 @@
-package com.yandex.filmorate.service;
-
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-public class UserServiceTest {
-}
+//package com.yandex.filmorate.service;
+//
+//import org.springframework.boot.test.context.SpringBootTest;
+//
+//@SpringBootTest
+//public class UserServiceTest {
+//}

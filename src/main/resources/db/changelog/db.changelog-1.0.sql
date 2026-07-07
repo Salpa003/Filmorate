@@ -66,9 +66,18 @@ CREATE TABLE films_genres
 );
 
 -- changeset salpa:9
-INSERT INTO  rating(name)
+INSERT INTO rating(name)
 VALUES ('0+'),
        ('6+'),
        ('12+'),
        ('16+'),
-       ('18+')
+       ('18+');
+
+--changeset salpa:10
+INSERT INTO genres(name)
+VALUES ('Драма'),
+       ('Комедия'),
+       ('Боевик'),
+       ('Фантастика'),
+       ('Фэнтези'),
+       ('Ужасы');

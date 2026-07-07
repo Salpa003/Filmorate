@@ -20,7 +20,7 @@ public class GenreService {
     }
 
     @Transactional
-    public GenreEntity getGenre(Long id) {
+    public GenreEntity getGenre(Integer id) {
         return repository.findById(id).get();
     }
 }

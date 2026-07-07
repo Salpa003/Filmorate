@@ -2,6 +2,7 @@ package com.yandex.filmorate.storage;
 
 
 import com.yandex.filmorate.model.Film;
+import com.yandex.filmorate.model.Film2;
 import com.yandex.filmorate.model.User;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +15,10 @@ public class InMemoryFilmStorage implements FilmStorage{
     private static final Map<Long, Film> films = new HashMap<>();
     private static Long id = 1L;
     @Override
-    public void addFilm(Film film) {
+    public void addFilm(Film2 film) {
         film.setId(id);
         film.setLikes(new HashSet<>());
-        films.put(id++, film);
+//        films.put(id++, film);
     }
 
     @Override
@@ -26,8 +27,8 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     @Override
-    public Film updateFilm(Film film) {
-        films.replace(film.getId(),film);
+    public Film2 updateFilm(Film2 film) {
+//        films.replace(film.getId(),film);
         return film;
     }
 

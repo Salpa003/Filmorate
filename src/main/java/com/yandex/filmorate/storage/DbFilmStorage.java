@@ -2,6 +2,8 @@ package com.yandex.filmorate.storage;
 
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.model.Film;
+import com.yandex.filmorate.model.Film2;
+import com.yandex.filmorate.model.GenreView;
 import com.yandex.filmorate.model.User;
 import com.yandex.filmorate.model.db.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +32,25 @@ public class DbFilmStorage implements FilmStorage {
     private FilmMapper mapper;
 
     @Override
-    public void addFilm(Film film) {
+    public void addFilm(Film2 film) {
         FilmEntity filmEntity = mapper.map(film);
         filmRepository.save(filmEntity);
         film.setId(filmEntity.getId());
-        Set<String> genres = film.getGenre();
+        Set<GenreView> genres = film.getGenres();
         if (genres == null)
             throw new NotFoundException("Genre not found!");
-        for (String str: genres) {
-            boolean b = genreRepository.existsByName(str);
+        Set<Integer> ids = genres.stream().map(g -> g.getId()).collect(Collectors.toSet());
+        for (Integer id: ids) {
+            boolean b = genreRepository.existsById(id);
             if (!b)
                 throw new NotFoundException("Genre not found!");
         }
 
-        List<Long> ids = genres.stream()
-                .map(name -> genreRepository.findByName(name)).toList();
+//        List<Long> ids = genres.stream()
+//                .map(name -> genreRepository.findByName(name)).toList();
 
         List<FilmGenreEntity> list = ids.stream()
-                .map(id -> new FilmGenreEntity(film.getId(), id)).collect(Collectors.toList());
+                .map(genre -> new FilmGenreEntity(film.getId(), genre)).collect(Collectors.toList());
         filmGenreRepository.saveAll(list);
     }
     @Override
@@ -56,7 +59,7 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film updateFilm(Film film) {
+    public Film2 updateFilm(Film2 film) {
 //        FilmEntity filmEntity = mapper.map(film);
 //        filmRepository.save(filmEntity);
         addFilm(film);

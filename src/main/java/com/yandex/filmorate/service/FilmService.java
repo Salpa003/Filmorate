@@ -3,6 +3,7 @@ package com.yandex.filmorate.service;
 
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.model.Film;
+import com.yandex.filmorate.model.Film2;
 import com.yandex.filmorate.model.User;
 import com.yandex.filmorate.storage.FilmStorage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class FilmService {
     }
 
     @Transactional
-    public void addFilm(Film film) {
+    public void addFilm(Film2 film) {
         filmStorage.addFilm(film);
     }
 
@@ -61,8 +62,8 @@ public class FilmService {
     }
 
     @Transactional
-    public Film updateFilm(Film film) {
-        return filmStorage.updateFilm(film);
+    public Film2  updateFilm(Film2 film) {
+        return filmStorage.updateFilm(Film2.builder().build());
     }
 
     @Transactional(readOnly = true)

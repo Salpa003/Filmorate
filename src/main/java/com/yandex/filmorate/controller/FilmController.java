@@ -3,6 +3,7 @@ package com.yandex.filmorate.controller;
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.exception.ValidationException;
 import com.yandex.filmorate.model.Film;
+import com.yandex.filmorate.model.Film2;
 import com.yandex.filmorate.service.FilmService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
+    public Film2 addFilm(@RequestBody Film2 film) {
         validateFilm(film);
         filmService.addFilm(film);
         log.info("Add new film ({})", film);
@@ -46,12 +47,12 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film2 updateFilm(@RequestBody Film2 film) {
         if (!filmService.isExist(film.getId())) {
             throw new NotFoundException("Not found my");
         }
         validateFilm(film);
-        Film film1 = filmService.updateFilm(film);
+        Film2 film1 = filmService.updateFilm(film);
         log.info("Update film ({})", film);
         return film1;
     }
@@ -66,7 +67,7 @@ public class FilmController {
         return filmService.getTopFilms(count == null? 10 : count);
     }
 
-    public void validateFilm(Film film) {
+    public void validateFilm(Film2 film) {
         String message = null;
         if (film.getName().isBlank())
             message = "Название фильма не может быть пустым";
@@ -74,6 +75,22 @@ public class FilmController {
             message = "У фильма слишком большое описание. Нужно не больше " + DESCRIPTION_LENGTH_MAX + " символов";
         if (film.getReleaseDate().isBefore(DATE_FILM_START))
            message = "Фильм вышел до того как придымали фильмы";
+        if (film.getDuration() <= 0)
+            message = "Продолжительность должна быть положительной";
+
+        if (message != null) {
+            log.info("Ошибка при валидации фильма, {}",message);
+            throw new ValidationException(message);
+        }
+    }
+    public void validateFilm(Film film) {
+        String message = null;
+        if (film.getName().isBlank())
+            message = "Название фильма не может быть пустым";
+        if (film.getDescription().length() > DESCRIPTION_LENGTH_MAX)
+            message = "У фильма слишком большое описание. Нужно не больше " + DESCRIPTION_LENGTH_MAX + " символов";
+        if (film.getReleaseDate().isBefore(DATE_FILM_START))
+            message = "Фильм вышел до того как придымали фильмы";
         if (film.getDuration() <= 0)
             message = "Продолжительность должна быть положительной";
 

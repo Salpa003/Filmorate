@@ -3,16 +3,17 @@ package com.yandex.filmorate.storage;
 
 
 import com.yandex.filmorate.model.Film;
+import com.yandex.filmorate.model.Film2;
 import com.yandex.filmorate.model.User;
 
 import java.util.List;
 
 public interface FilmStorage {
-    void addFilm(Film film);
+    void addFilm(Film2 film);
 
     void deleteFilm(Long id);
 
-    Film updateFilm(Film film);
+    Film2 updateFilm(Film2 film);
 
     List<Film> getAllFilms();
 
