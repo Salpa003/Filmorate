@@ -72,9 +72,13 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public Film2 updateFilm(Film2 film) {
-//        FilmEntity filmEntity = mapper.map(film);
-//        filmRepository.save(filmEntity);
-        addFilm(film);
+////        FilmEntity filmEntity = mapper.map(film);
+////        filmRepository.save(filmEntity);
+//        addFilm(film);
+//        return film;
+        FilmEntity filmEntity = mapper.map(film);
+        filmRepository.save(filmEntity);
+
         return film;
     }
 

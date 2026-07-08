@@ -63,7 +63,7 @@ public class FilmService {
 
     @Transactional
     public Film2  updateFilm(Film2 film) {
-        return filmStorage.updateFilm(Film2.builder().build());
+        return filmStorage.updateFilm(film);
     }
 
     @Transactional(readOnly = true)

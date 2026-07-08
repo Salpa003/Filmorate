@@ -48,7 +48,7 @@ public class FilmController {
 
     @PutMapping
     public Film2 updateFilm(@RequestBody Film2 film) {
-        if (!filmService.isExist(film.getId())) {
+        if (film == null || !filmService.isExist(film.getId())) {
             throw new NotFoundException("Not found my");
         }
         validateFilm(film);
