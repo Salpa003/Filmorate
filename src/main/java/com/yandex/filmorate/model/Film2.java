@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -20,6 +21,6 @@ public class Film2 {
     private LocalDate releaseDate;
     private Integer duration;
     private Set<Long> likes;
-    private Set<GenreView> genres;
+    private List<GenreView> genres;
     private RatingEntity mpa;
 }

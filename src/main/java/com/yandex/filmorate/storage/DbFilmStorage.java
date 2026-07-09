@@ -9,10 +9,7 @@ import com.yandex.filmorate.model.db.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -48,13 +45,13 @@ public class DbFilmStorage implements FilmStorage {
         mpa = ratingRepository.findById(mpa.getId()).orElse(null);
         film.setMpa(mpa);
 
-        Set<GenreView> genres = film.getGenres();
+        List<GenreView> genres = film.getGenres();
         if (genres == null)
             throw new NotFoundException("Genre not found!");
         Set<Integer> ids = genres.stream().map(g -> g.getId()).collect(Collectors.toSet());
         for (Integer id: ids) {
-            boolean b = genreRepository.existsById(id);
-            if (!b)
+            Optional<GenreEntity> byId = genreRepository.findById(id);
+            if (byId.isEmpty())
                 throw new NotFoundException("Genre not found!");
         }
 
@@ -64,6 +61,8 @@ public class DbFilmStorage implements FilmStorage {
         List<FilmGenreEntity> list = ids.stream()
                 .map(genre -> new FilmGenreEntity(film.getId(), genre)).collect(Collectors.toList());
         filmGenreRepository.saveAll(list);
+
+
     }
     @Override
     public void deleteFilm(Long id) {
