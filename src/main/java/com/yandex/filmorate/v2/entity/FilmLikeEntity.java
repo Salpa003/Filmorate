@@ -1,4 +1,4 @@
-package com.yandex.filmorate.model.db;
+package com.yandex.filmorate.v2.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,18 +9,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "films_genres")
-public class FilmGenreEntity {
+@Table(name= "films_likes")
+public class FilmLikeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     private Long filmId;
 
-    private Integer genreId;
+    private Long userId;
 
-    public FilmGenreEntity(Long filmId, Integer genreId) {
+    public FilmLikeEntity(Long filmId, Long userId) {
         this.filmId = filmId;
-        this.genreId = genreId;
+        this.userId = userId;
     }
 }

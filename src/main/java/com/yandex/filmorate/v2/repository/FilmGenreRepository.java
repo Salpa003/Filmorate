@@ -1,11 +1,11 @@
-package com.yandex.filmorate.model.db;
+package com.yandex.filmorate.v2.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Set;
 
-public interface FilmGenreRepository extends JpaRepository<FilmGenreEntity, Long> {
+public interface FilmGenreRepository extends JpaRepository<com.yandex.filmorate.v2.entity.FilmGenreEntity, Long> {
 
     @Query(value = """
     SELECT g.name FROM FilmGenreEntity fg

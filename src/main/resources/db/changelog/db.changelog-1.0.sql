@@ -44,7 +44,7 @@ CREATE TABLE films
     description  TEXT,
     release_date DATE,
     duration     INT,
-    rating       VARCHAR(30) REFERENCES rating (name)
+    rating       INT REFERENCES rating(id)
 );
 
 --changeset salpa:7

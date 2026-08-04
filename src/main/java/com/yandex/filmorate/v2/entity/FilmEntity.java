@@ -1,16 +1,17 @@
-package com.yandex.filmorate.model.db;
+package com.yandex.filmorate.v2.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "films")
 public class FilmEntity {
@@ -26,7 +27,5 @@ public class FilmEntity {
 
     private Integer duration;
 
-//    private Set<Long> likes;
-//    private Set<String> genre;
-    private String rating;
+    private Integer rating;
 }
