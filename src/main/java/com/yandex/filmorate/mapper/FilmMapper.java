@@ -7,6 +7,7 @@ import com.yandex.filmorate.dto.GenreReadDto;
 import com.yandex.filmorate.dto.MpaReadDto;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -34,7 +35,7 @@ public class FilmMapper {
         );
     }
 
-    public FilmReadDto toReadDto(FilmEntity entity, Set<Long> likes, Set<GenreReadDto> genres, MpaReadDto mpa) {
+    public FilmReadDto toReadDto(FilmEntity entity, Set<Long> likes, List<GenreReadDto> genres, MpaReadDto mpa) {
         return new FilmReadDto(
                 entity.getId(),
                 entity.getName(),

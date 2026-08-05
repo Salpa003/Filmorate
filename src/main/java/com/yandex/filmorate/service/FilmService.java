@@ -153,8 +153,11 @@ public class FilmService {
     public FilmReadDto getFilmById(Long id) {
         FilmEntity entity = filmRepository.findById(id).get();
         Set<Long> likes = filmLikeRepository.getLikesByFilmId(id);
-        Set<GenreReadDto> genres = filmGenreRepository.getGenresEntityByFilmId(id)
-                .stream().map(genreMapper::toReadDto).collect(Collectors.toSet());
+        List<GenreReadDto> genres = filmGenreRepository.getGenresEntityByFilmId(id)
+                .stream()
+                .map(genreMapper::toReadDto)
+                .sorted((g1,g2)-> g1.getId() - g2.getId())
+                .collect(Collectors.toList());
         RatingEntity ratingEntity = ratingRepository.findById(entity.getRating()).get();
         FilmReadDto dto = filmMapper.toReadDto(entity, likes, genres, new MpaReadDto(ratingEntity.getId(), ratingEntity.getName()));
         return dto;
