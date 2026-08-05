@@ -1,8 +1,8 @@
 package com.yandex.filmorate.service;
 
 import com.yandex.filmorate.exception.NotFoundException;
-import com.yandex.filmorate.model.db.RatingEntity;
-import com.yandex.filmorate.model.db.RatingRepository;
+import com.yandex.filmorate.entity.RatingEntity;
+import com.yandex.filmorate.repository.RatingRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
