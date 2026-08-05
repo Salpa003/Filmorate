@@ -1,17 +1,14 @@
 package com.yandex.filmorate.service;
 
 
+import com.yandex.filmorate.dto.*;
 import com.yandex.filmorate.entity.FilmEntity;
 import com.yandex.filmorate.entity.FilmGenreEntity;
 import com.yandex.filmorate.entity.FilmLikeEntity;
 import com.yandex.filmorate.entity.RatingEntity;
 import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.exception.ValidationException;
-import com.yandex.filmorate.dto.FilmReadDto;
-import com.yandex.filmorate.dto.GenreReadDto;
-import com.yandex.filmorate.dto.MpaReadDto;
 import com.yandex.filmorate.mapper.FilmMapper;
-import com.yandex.filmorate.dto.FilmCreateDto;
 import com.yandex.filmorate.mapper.GenreMapper;
 import com.yandex.filmorate.repository.FilmGenreRepository;
 import com.yandex.filmorate.repository.FilmLikeRepository;
@@ -29,15 +26,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-
-
-//    @Autowired
-////    @Qualifier("inMemoryFilmStorage")
-//    @Qualifier("dbFilmStorage")
-//    private FilmStorage filmStorage;
-//
-//    @Autowired
-//    private UserService userService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private FilmRepository filmRepository;
@@ -59,21 +49,17 @@ public class FilmService {
 
     @Transactional
     public void addLike(Long filmId, Long userId) {
-//        User user = userService.getUserById(userId);
-//        FilmReadDto film = getFilmById(filmId);
-//        if (user == null || film == null)
-//            throw new NotFoundException("");
-//        FilmLikeEntity entity = new FilmLikeEntity(filmId, userId);
-//       filmLikeRepository.save(entity);
+        if (!userService.isExist(userId) ||!isExist(filmId))
+            throw new NotFoundException("");
+        FilmLikeEntity entity = new FilmLikeEntity(filmId, userId);
+       filmLikeRepository.save(entity);
     }
 
     @Transactional
     public void deleteLike(Long filmId, Long userId) {
-//        User user = userService.getUserById(userId);
-//        FilmReadDto film = getFilmById(filmId);
-//        if (film == null || user == null)
-//            throw new NotFoundException("");
-//       filmLikeRepository.deleteByFilmIdAndUserId(filmId, userId);
+        if (!userService.isExist(userId) ||!isExist(filmId))
+            throw new NotFoundException("");
+       filmLikeRepository.deleteByFilmIdAndUserId(filmId, userId);
     }
 
     @Transactional(readOnly = true)
