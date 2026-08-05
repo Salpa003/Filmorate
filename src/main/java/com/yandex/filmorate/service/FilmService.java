@@ -5,6 +5,7 @@ import com.yandex.filmorate.entity.FilmEntity;
 import com.yandex.filmorate.entity.FilmGenreEntity;
 import com.yandex.filmorate.entity.FilmLikeEntity;
 import com.yandex.filmorate.entity.RatingEntity;
+import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.exception.ValidationException;
 import com.yandex.filmorate.dto.FilmReadDto;
 import com.yandex.filmorate.dto.GenreReadDto;
@@ -91,6 +92,8 @@ public class FilmService {
         FilmEntity entity = filmMapper.toEntity(film);
         filmRepository.save(entity);
 
+
+
         if (film.getLikes() != null && !film.getLikes().isEmpty()) {
             film.getLikes()
                     .forEach((uid) -> {
@@ -176,6 +179,19 @@ public class FilmService {
             message = "Фильм вышел до того как придымали фильмы";
         if (film.getDuration() <= 0)
             message = "Продолжительность должна быть положительной";
+
+        if (film.getMpa() != null) {
+            if (film.getMpa().getId() < 1 || film.getMpa().getId() > 5) {
+                throw new NotFoundException("Mpa not found");
+            }
+        }
+        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+            for (GenreReadDto g: film.getGenres()) {
+                if (g.getId() < 1 || g.getId() > 6) {
+                    throw new NotFoundException("");
+                }
+            }
+        }
 
         if (message != null) {
 //            log.info("Ошибка при валидации фильма, {}",message);

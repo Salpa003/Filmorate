@@ -21,9 +21,10 @@ public class FilmController {
     public List<FilmReadDto> getAllFilms() {
         return filmService.getAllFilms();
     }
+
     @DeleteMapping("/{id}/like/{userId}")
     public FilmReadDto deleteLike(@PathVariable Long id, @PathVariable Long userId) {
-        filmService.deleteLike(id,userId);
+        filmService.deleteLike(id, userId);
         return filmService.getFilmById(id);
     }
 
@@ -35,7 +36,7 @@ public class FilmController {
 
     @PostMapping
     public FilmReadDto addFilm(@RequestBody FilmCreateDto film) {
-       Long id =  filmService.addFilm(film);
+        Long id = filmService.addFilm(film);
         log.info("Add new film ({})", film);
         return filmService.getFilmById(id);
     }
@@ -52,12 +53,12 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public FilmReadDto getFilmById(@PathVariable("id") Long id) {
-       return filmService.getFilmById(id);
+        return filmService.getFilmById(id);
     }
 
     @GetMapping("/popular")
     public List<FilmReadDto> getPopularFilms(@RequestParam(required = false) Integer count) {
-        return filmService.getTopFilms(count == null? 10 : count);
+        return filmService.getTopFilms(count == null ? 10 : count);
     }
 
 }

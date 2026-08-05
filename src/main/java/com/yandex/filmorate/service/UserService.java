@@ -37,28 +37,31 @@ public class UserService {
     public void addFriend(Long user, Long friend) {
         boolean exists1 = userRepository.existsById(user);
         boolean exists2 = userRepository.existsById(friend);
-        if (exists1 && exists2)
+        if (exists1 && exists2) {
+            UsersFriendsEntity entity = new UsersFriendsEntity(user, friend);
+            userFriendRepository.save(entity);
+        } else {
             throw new NotFoundException("");
+        }
 
-        UsersFriendsEntity entity = new UsersFriendsEntity(user, friend);
-        userFriendRepository.save(entity);
     }
 
     @Transactional
     public void deleteFriend(Long user, Long friend) {
         boolean exists1 = userRepository.existsById(user);
         boolean exists2 = userRepository.existsById(friend);
-        if (exists1 && exists2)
+        if (exists1 && exists2) {
+            userFriendRepository.deleteByUserIdAndFriendId(user, friend);
+        } else {
             throw new NotFoundException("");
-
-        userFriendRepository.deleteByUserIdAndFriendId(user, friend);
+        }
     }
 
     @Transactional(readOnly = true)
     public Set<UserReadDto> getDoubleFriends(Long user, Long friend) {
         boolean exists1 = userRepository.existsById(user);
         boolean exists2 = userRepository.existsById(friend);
-        if (exists1 && exists2)
+        if (!exists1 || !exists2)
             throw new NotFoundException("");
 
         Set<Long> friends1 = userFriendRepository.findFriendsByUserId(user);
@@ -68,7 +71,7 @@ public class UserService {
                 .collect(Collectors.toSet());
 
         Set<UserReadDto> dtos = new HashSet<>();
-        for (Long id: friends) {
+        for (Long id : friends) {
             dtos.add(getUserById(id));
         }
         return dtos;
