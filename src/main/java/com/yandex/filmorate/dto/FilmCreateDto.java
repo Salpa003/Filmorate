@@ -15,17 +15,3 @@ public class FilmCreateDto {
     Set<GenreReadDto> genres;
     MpaReadDto mpa;
 }
-//{
-//        "name": "New film",
-//        "description": "Description for film 29",
-//        "releaseDate": "2000-01-01",
-//        "duration": 90,
-//        "genres": [
-//        {
-//        "id": 4
-//        }
-//        ],
-//        "mpa": {
-//        "id": 3
-//        }
-//        }

@@ -1,12 +1,13 @@
 package com.yandex.filmorate.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Value;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
 public class UserCreateDto {
     String email;
     String login;

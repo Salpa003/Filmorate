@@ -10,6 +10,7 @@ import com.yandex.filmorate.exception.NotFoundException;
 import com.yandex.filmorate.dto.UserCreateDto;
 import com.yandex.filmorate.exception.ValidationException;
 import com.yandex.filmorate.mapper.UserMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -34,27 +36,28 @@ public class UserService {
     private UserMapper userMapper;
 
     @Transactional
-    public void addFriend(Long user, Long friend) {
+    public UserReadDto addFriend(Long user, Long friend) {
         boolean exists1 = userRepository.existsById(user);
         boolean exists2 = userRepository.existsById(friend);
         if (exists1 && exists2) {
             UsersFriendsEntity entity = new UsersFriendsEntity(user, friend);
             userFriendRepository.save(entity);
         } else {
-            throw new NotFoundException("");
+            throw new NotFoundException("User/Friend id unknown (UserService:46)");
         }
-
+        return getUserById(user);
     }
 
     @Transactional
-    public void deleteFriend(Long user, Long friend) {
+    public UserReadDto deleteFriend(Long user, Long friend) {
         boolean exists1 = userRepository.existsById(user);
         boolean exists2 = userRepository.existsById(friend);
         if (exists1 && exists2) {
             userFriendRepository.deleteByUserIdAndFriendId(user, friend);
         } else {
-            throw new NotFoundException("");
+            throw new NotFoundException("User/Friend id unknown (UserService:58)");
         }
+        return getUserById(user);
     }
 
     @Transactional(readOnly = true)
@@ -62,7 +65,7 @@ public class UserService {
         boolean exists1 = userRepository.existsById(user);
         boolean exists2 = userRepository.existsById(friend);
         if (!exists1 || !exists2)
-            throw new NotFoundException("");
+            throw new NotFoundException("User/Friend id unknown (UserService:68)");
 
         Set<Long> friends1 = userFriendRepository.findFriendsByUserId(user);
         Set<Long> friends2 = userFriendRepository.findFriendsByUserId(friend);
@@ -78,25 +81,31 @@ public class UserService {
     }
 
     @Transactional
-    public Long addUser(UserCreateDto dto) {
+    public UserReadDto addUser(UserCreateDto dto) {
         validateUser(dto);
         UserEntity entity = userMapper.toEntity(dto);
         userRepository.save(entity);
-        return entity.getId();
+        log.info("Create new user ({})", dto);
+        return getUserById(entity.getId());
     }
 
-//    @Transactional
-//    public void deleteUser(Long userId) {
-//        userStorage.deleteUser(userId);
-//    }
+    @Transactional
+    public void deleteUser(Long userId) {
+       userRepository.deleteById(userId);
+    }
 
     @Transactional
-    public void updateUser(UserReadDto user) {
+    public UserReadDto updateUser(UserReadDto user) {
+        if (!isExist(user.getId())) {
+            throw new NotFoundException("Update unknown user (UserService:99)");
+        }
         validateUser(user);
         UserEntity entity = userMapper.toEntity(user);
         userRepository.save(entity);
-//        Set<Long> friends = user.getFriends();
-//        Set<Long> friendsOld = userFriendRepository.findFriendsByUserId(user.getId());
+
+        log.info("Update user ({})", user);
+
+        return user;
     }
 
     @Transactional(readOnly = true)
@@ -120,7 +129,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public Set<UserReadDto> getFriends(Long id) {
         if (!userRepository.existsById(id))
-            throw new NotFoundException("");
+            throw new NotFoundException("User id unknown (UserService:132)");
 
         Set<Long> ids = userFriendRepository.findFriendsByUserId(id);
         Set<UserReadDto> friends = new HashSet<>();
@@ -147,25 +156,13 @@ public class UserService {
             user.setName(user.getLogin());
 
         if (message != null) {
-//            log.info("Ошибка валидации пользоватля, {}", message);
+            log.info("Ошибка валидации пользоватля, {}", message);
             throw new ValidationException(message);
         }
     }
 
-    public void validateUser(UserReadDto user) {
-        String message = null;
-        if (user.getEmail().isEmpty() || !user.getEmail().contains("@"))
-            message = "Не корректная почта";
-        if (user.getLogin().isEmpty() || user.getLogin().contains(" "))
-            message = "Не корректный логин (возможно в нем есть пробелы)";
-        if (user.getBirthday().isAfter(LocalDate.now()))
-            message = "Не верная дата рождения";
-        if (user.getName() == null || user.getName().isBlank())
-            user.setName(user.getLogin());
-
-        if (message != null) {
-//            log.info("Ошибка валидации пользоватля, {}", message);
-            throw new ValidationException(message);
-        }
+    public void validateUser(UserReadDto dto) {
+      UserCreateDto createDto = userMapper.toCreateDto(dto);
+      validateUser(createDto);
     }
 }

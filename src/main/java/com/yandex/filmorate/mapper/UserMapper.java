@@ -20,6 +20,15 @@ public class UserMapper {
                 friends
         );
     }
+    public UserCreateDto toCreateDto(UserReadDto dto) {
+        return new UserCreateDto(
+                dto.getEmail(),
+                dto.getLogin(),
+                dto.getName(),
+                dto.getBirthday(),
+                dto.getFriends()
+        );
+    }
 
     public UserEntity toEntity(UserCreateDto dto) {
         return new UserEntity(
