@@ -1,26 +1,29 @@
-package com.yandex.filmorate.model.db;
+package com.yandex.filmorate.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
-@Table(name= "films_likes")
-public class FilmLikeEntity {
+@Table(name = "users_friends")
+public class UsersFriendsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long filmId;
-
     private Long userId;
 
-    public FilmLikeEntity(Long filmId, Long userId) {
-        this.filmId = filmId;
+    private Long friendId;
+
+    public UsersFriendsEntity(Long userId, Long friendId) {
         this.userId = userId;
+        this.friendId = friendId;
     }
 }

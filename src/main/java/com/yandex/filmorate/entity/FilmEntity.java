@@ -1,26 +1,31 @@
-package com.yandex.filmorate.model;
+package com.yandex.filmorate.entity;
 
-import com.yandex.filmorate.model.db.RatingEntity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Film2 {
+@Entity
+@Table(name = "films")
+public class FilmEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String description;
+
     private LocalDate releaseDate;
+
     private Integer duration;
-    private Set<Long> likes;
-    private List<GenreView> genres;
-    private RatingEntity mpa;
+
+    private Integer rating;
 }

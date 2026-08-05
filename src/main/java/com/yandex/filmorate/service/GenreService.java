@@ -1,15 +1,14 @@
 package com.yandex.filmorate.service;
 
 import com.yandex.filmorate.exception.NotFoundException;
-import com.yandex.filmorate.model.db.GenreEntity;
-import com.yandex.filmorate.model.db.GenreRepository;
+import com.yandex.filmorate.entity.GenreEntity;
+import com.yandex.filmorate.repository.GenreRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class GenreService {

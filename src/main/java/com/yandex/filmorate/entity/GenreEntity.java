@@ -1,4 +1,4 @@
-package com.yandex.filmorate.model.db;
+package com.yandex.filmorate.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

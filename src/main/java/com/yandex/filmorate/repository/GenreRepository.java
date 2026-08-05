@@ -1,5 +1,6 @@
-package com.yandex.filmorate.model.db;
+package com.yandex.filmorate.repository;
 
+import com.yandex.filmorate.entity.GenreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

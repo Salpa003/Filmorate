@@ -44,7 +44,7 @@ CREATE TABLE films
     description  TEXT,
     release_date DATE,
     duration     INT,
-    rating       VARCHAR(30) REFERENCES rating (name)
+    rating       INT REFERENCES rating(id)
 );
 
 --changeset salpa:7
@@ -66,12 +66,19 @@ CREATE TABLE films_genres
 );
 
 -- changeset salpa:9
+-- INSERT INTO rating(name)
+-- VALUES ('0+'),
+--        ('6+'),
+--        ('12+'),
+--        ('16+'),
+--        ('18+');
+
 INSERT INTO rating(name)
-VALUES ('0+'),
-       ('6+'),
-       ('12+'),
-       ('16+'),
-       ('18+');
+VALUES ('G'),
+       ('PG'),
+       ('PG-13'),
+       ('R'),
+       ('NC-17');
 
 --changeset salpa:10
 INSERT INTO genres(name)

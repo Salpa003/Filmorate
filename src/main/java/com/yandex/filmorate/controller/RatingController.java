@@ -1,6 +1,6 @@
 package com.yandex.filmorate.controller;
 
-import com.yandex.filmorate.model.db.RatingEntity;
+import com.yandex.filmorate.entity.RatingEntity;
 import com.yandex.filmorate.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
